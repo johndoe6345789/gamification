@@ -29,8 +29,8 @@ void ProgressService::getUserProgress(const std::string& userId,
 {
     const std::string sql = R"(
         SELECT u.total_points,
-               u.current_streak,
-               u.longest_streak,
+               COALESCE(s.current_streak, 0) AS current_streak,
+               COALESCE(s.longest_streak, 0) AS longest_streak,
                COALESCE(json_agg(
                    json_build_object(
                        'slug', b.slug,
@@ -42,8 +42,9 @@ void ProgressService::getUserProgress(const std::string& userId,
         LEFT JOIN user_badges ub
             ON ub.user_id = u.id
         LEFT JOIN badges b ON b.id = ub.badge_id
+        LEFT JOIN streaks s ON s.user_id = u.id
         WHERE u.id = $1
-        GROUP BY u.id
+        GROUP BY u.id, s.current_streak, s.longest_streak
     )";
 
     auto dbClient = db();
