@@ -110,6 +110,9 @@ WORKDIR /app
 COPY --from=build "/build/${SVC_NAME}" ./bin/svc
 COPY "services/${SVC_DIR}/config/config.json" \
     ./config/config.json
+# The level thresholds, point values and streak milestones. loadGamificationConfig() reads
+# src/constants/gamification.json relative to the working directory; without it no levels exist.
+COPY services/gamification/constants/gamification.json ./src/constants/gamification.json
 
 RUN mkdir -p logs && \
     chown -R nextra:nextra /app
