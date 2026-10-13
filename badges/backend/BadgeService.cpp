@@ -27,13 +27,15 @@ void BadgeService::checkAndAwardBadges(const std::string& userId,
                                        Callback onSuccess, ErrCallback onError)
 {
     const std::string sql = R"(
-        SELECT u.total_points, u.current_streak,
+        SELECT u.total_points,
+               COALESCE(s.current_streak, 0) AS current_streak,
                COUNT(DISTINCT cm.id) AS msg_count
         FROM users u
         LEFT JOIN chat_messages cm
             ON cm.user_id = u.id
+        LEFT JOIN streaks s ON s.user_id = u.id
         WHERE u.id = $1
-        GROUP BY u.id
+        GROUP BY u.id, s.current_streak
     )";
     auto dbClient = db();
     *dbClient << sql << userId >> [userId, onSuccess,

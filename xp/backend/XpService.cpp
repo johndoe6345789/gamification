@@ -36,13 +36,13 @@ void XpService::awardPoints(const std::string& userId, std::int64_t amount,
             INSERT INTO points_log
                 (user_id, amount, reason,
                  source, created_at)
-            VALUES ($1, $2, $3, $4, NOW())
+            VALUES ($1::uuid, $2::bigint, $3, $4, NOW())
             RETURNING user_id
         )
         UPDATE users
-        SET total_points = total_points + $2,
+        SET total_points = total_points + $2::bigint,
             updated_at   = NOW()
-        WHERE id = $1
+        WHERE id = $1::uuid
         RETURNING total_points
     )";
 

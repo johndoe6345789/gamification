@@ -45,12 +45,13 @@ void LeaderboardService::getLeaderboard(const std::string& period,
                COALESCE(SUM(pt.amount), 0)
                    AS period_points
         FROM users u
-        LEFT JOIN point_transactions pt
+        LEFT JOIN points_log pt
             ON pt.user_id = u.id {}
+        WHERE u.is_active AND u.leaderboard_opt_in
         GROUP BY u.id, u.username,
                  u.total_points
         ORDER BY period_points DESC
-        LIMIT $1
+        LIMIT $1::int
     )",
                            dateFilter);
 
