@@ -51,7 +51,7 @@ void LeaderboardService::getLeaderboard(const std::string& period,
         GROUP BY u.id, u.username,
                  u.total_points
         ORDER BY period_points DESC
-        LIMIT $1
+        LIMIT $1::int
     )",
                            dateFilter);
 
